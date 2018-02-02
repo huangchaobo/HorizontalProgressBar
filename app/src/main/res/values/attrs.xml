@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MixTextProgressBar">
+        <attr name="mixTextColor" format="color"/>
+        <attr name="textColor" format="color"/>
+        <attr name="textSize" format="dimension"/>
+        <attr name="textGravity" format="enum">
+            <enum name="LEFT" value="0"/>
+            <enum name="CENTER" value="1"/>
+            <enum name="RIGHT" value="2"/>
+        </attr>
+        <attr name="textPadding" format="dimension"/>
+    </declare-styleable>
+
+</resources>
