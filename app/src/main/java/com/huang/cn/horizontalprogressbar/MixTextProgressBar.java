@@ -10,16 +10,18 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.ProgressBar;
 
-/**
+import java.lang.ref.WeakReference;
 
- * <p>
- * 进度条上添加文字显示。文字支持根据当前进度混合颜色
- * 作者： huangbiao
- * 时间： 2018-01-04
+/**
+ * 自定义进度条
+ * @author huangchaobo
+ * create at 2018/2/6 10:33
  */
 public class MixTextProgressBar extends ProgressBar {
     /**
@@ -36,7 +38,37 @@ public class MixTextProgressBar extends ProgressBar {
     private float mTextSize = 36;
     private int gravity = 0;  //0:left  1:center  2:right
     private float padding = 0;  //相对于gravity的间距，当gravity = center时没有意义
+    private int mProgress;//当前进度
+    private MyHandler myHandler;
+    /**目标进度*/
+    private int targetProgress;
 
+    private class MyHandler extends Handler {
+
+        private WeakReference<Context> reference;
+
+        MyHandler(Context context) {
+            reference = new WeakReference<>(context);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case 0:
+                        if (mProgress <= targetProgress) {
+                            setProgress(mProgress);
+                            setText(mProgress/10+"/"+30);
+                            myHandler.sendEmptyMessageDelayed(0, 0);
+                            mProgress+=5;
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+        }
+
+    }
     public MixTextProgressBar(Context context) {
         super(context);
         init(context, null);
@@ -119,6 +151,12 @@ public class MixTextProgressBar extends ProgressBar {
     public void setProgress(int progress) {
         super.setProgress(progress);
     }
+    /**设置进度，带动效*/
+    public void setDynamicProgress(int progress) {
+        mProgress=0;
+        this.targetProgress=progress;
+        myHandler.sendEmptyMessageDelayed(0, 0);
+    }
 
     private void init(Context context, AttributeSet attrs) {
         //init attrs
@@ -144,6 +182,8 @@ public class MixTextProgressBar extends ProgressBar {
         mMixPaint.setAntiAlias(true);
         mMixPaint.setColor(mMixTextColor);
         mMixPaint.setFilterBitmap(false);
+
+        myHandler = new MyHandler(context);
     }
 
     public void setTextColor(int color) {
